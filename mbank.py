@@ -8,23 +8,21 @@
 # mbank = Mbank('identyfikator', 'haslo', '71 1140 2004 0000 3902 6269 9864')
 # print mbank.get_history()
 
-import sys
 import re
-import mechanize
 import datetime
 from mechanize import Browser
 
 DEBUG = False
 
 # regex do wyciagania danych z history CSV
-reg = re.compile('(?P<operation_date>^\d+\-\d+\-\d+);' 
-                 '(?P<book_date>\d+\-\d+\-\d+);' 
-                 '(?P<type>[^;]+);' 
-                 '(?P<who>[^;]+);'
-                 '\'(?P<account>[^;]+)\';'
-                 '(?P<title>[^;]+)";'
+reg = re.compile('(?P<operation_date>^\d+\-\d+\-\d+);' \
+                 '(?P<book_date>\d+\-\d+\-\d+);' \
+                 '(?P<type>[^;]+);' \
+                 '"(?P<title>[^;]+)";' \
+                 '"(?P<who>[^;]+)";' \
+                 '\'(?P<account>[^;]+)\';' \
                  '(?P<amount>[-\ 0-9,]+);' \
-                 '(?P<account_balance>[-\ 0-9,]+);')
+                 '(?P<account_balance>[-\ 0-9,]+);') 
 
 class Mbank(object):
     """
