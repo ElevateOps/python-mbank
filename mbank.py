@@ -12,7 +12,7 @@ import re
 import datetime
 from mechanize import Browser
 
-DEBUG = False
+DEBUG = True
 
 # regex do wyciagania danych z history CSV
 reg = re.compile('(?P<operation_date>^\d+\-\d+\-\d+);' \
@@ -113,7 +113,7 @@ class Mbank(object):
         self.br.form.method = 'POST'
         return self.br.submit()
 
-    def _get_history(self, type):
+    def _get_history(self, type, last_day=False):
         """
         Metoda ustawiajaca odpowiednie parametry na formularzu historii
         transakcji i wysylajaca go.
@@ -125,10 +125,14 @@ class Mbank(object):
         self.br.form.set_value(name='export_oper_history_format', value=[type])
         self.br.form.action = '%s%s' % (self.url, '/printout_oper_list.aspx')
         self.br.form.method = 'POST'
+        if last_day:
+            self.br.form.set_value(['lastdays_radio'], name='rangepanel_group')
+            self.br.form.find_control('lastdays_period').items[0].selected = True
+
         response = self.br.submit()
         return response.read()
 
-    def get_history(self, type='HTML'):
+    def get_history(self, type='HTML', last_day=False):
         """
         Glowna metoda uruchamiajaca w sobie przejscie na formularz
         historii transakcji (po zalogowaniu) i pobranie danych.
@@ -136,7 +140,7 @@ class Mbank(object):
         self.login()
         self.select_account(self.bank_number)
         self.history_form()
-        return self._get_history(type)
+        return self._get_history(type, last_day)
 
     def parse_history_csv(self, data):
         """
